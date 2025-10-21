@@ -6,12 +6,25 @@ import torchaudio as ta
 from chatterbox.mtl_tts import ChatterboxMultilingualTTS
 from chatterbox.tts import ChatterboxTTS
 
-# Set device to GPU if available, otherwise CPU
-device = "cuda" if torch.cuda.is_available() else "cpu"
+# Check CUDA availability and compatibility
+try:
+    if torch.cuda.is_available():
+        # Test CUDA functionality
+        torch.cuda.init()
+        device = "cuda"
+        print(f"CUDA available: {torch.cuda.get_device_name()}")
+    else:
+        device = "cpu"
+        print("CUDA not available")
+except Exception as e:
+    print(f"CUDA error: {e}")
+    device = "cpu"
+    print("Falling back to CPU")
+
 print(f"Using device: {device}")
 
+# Load models on the determined device
 model = ChatterboxTTS.from_pretrained(device=device)
-
 multilingual_model = ChatterboxMultilingualTTS.from_pretrained(device=device)
 
 
